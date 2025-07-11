@@ -1,6 +1,6 @@
 # 夕礼グループ分けアプリ
 
-Google Calendar APIから「夕礼（隔週1回）」の参加者を取得し、指定した数でグループ分けを行うWebアプリケーション。前回のグループ分けを記憶し、連続で同じメンバーにならないよう調整します。
+参加者を手動で入力し、指定した数でグループ分けを行うWebアプリケーション。前回のグループ分けを記憶し、連続で同じメンバーにならないよう調整します。メンバーリストはRedisに保存され、次回利用時に再利用できます。
 
 ## 技術スタック
 
@@ -8,9 +8,8 @@ Google Calendar APIから「夕礼（隔週1回）」の参加者を取得し、
 - **React 18**
 - **TypeScript**
 - **Tailwind CSS**
-- **Google Calendar API**
-- **OpenAI API**
-- **Upstash Redis**
+- **OpenAI API** (グループ分け最適化)
+- **Upstash Redis** (メンバーリストと履歴保存)
 
 ## ローカル開発
 
@@ -25,11 +24,6 @@ npm install
 `.env.local.example`をコピーして`.env.local`を作成し、必要な環境変数を設定します：
 
 ```bash
-# Google Calendar API
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_REFRESH_TOKEN=your_google_refresh_token
-
 # OpenAI API
 OPENAI_API_KEY=your_openai_api_key
 
@@ -57,9 +51,6 @@ Vercelにデプロイする前に、必要な環境変数を設定する必要�
 npm install -g vercel
 
 # 環境変数の設定
-vercel env add GOOGLE_CLIENT_ID
-vercel env add GOOGLE_CLIENT_SECRET
-vercel env add GOOGLE_REFRESH_TOKEN
 vercel env add OPENAI_API_KEY
 vercel env add UPSTASH_REDIS_URL
 vercel env add UPSTASH_REDIS_TOKEN
@@ -106,13 +97,6 @@ vercel domains ls
 
 ## 外部サービスの設定
 
-### Google Cloud Platform
-
-1. [Google Cloud Console](https://console.cloud.google.com/)でプロジェクトを作成
-2. Google Calendar APIを有効化
-3. OAuth認証情報を作成
-4. リフレッシュトークンを取得
-
 ### OpenAI
 
 1. [OpenAI Platform](https://platform.openai.com/)でアカウント作成
@@ -126,9 +110,10 @@ vercel domains ls
 
 ## 機能一覧
 
-1. **カレンダー連携**
-   - Google Calendar APIから夕礼の参加者を自動取得
-   - 出席予定者のみ抽出
+1. **メンバー管理**
+   - メンバーの手動追加・編集・削除
+   - メンバーリストのRedisへの保存
+   - 保存したメンバーリストの読み込み
 
 2. **グループ分け**
    - グループ数を手動指定
@@ -138,7 +123,6 @@ vercel domains ls
 3. **表示機能**
    - グループ一覧表示
    - 前回との変更点表示
-   - 手動での参加者追加・編集
 
 ## トラブルシューティング
 
@@ -146,7 +130,6 @@ vercel domains ls
 
 本アプリケーションは以下の環境変数が必要です：
 
-- Google Calendar API: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`
 - OpenAI API: `OPENAI_API_KEY`
 - Upstash Redis: `UPSTASH_REDIS_URL`, `UPSTASH_REDIS_TOKEN`
 
