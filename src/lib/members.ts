@@ -55,36 +55,3 @@ export async function saveMembers(members: Member[]): Promise<boolean> {
     return false;
   }
 }
-
-/**
- * メンバーを追加する
- */
-export async function addMember(member: Member): Promise<boolean> {
-  const members = await getMembers();
-  members.push(member);
-  return saveMembers(members);
-}
-
-/**
- * メンバーを更新する
- */
-export async function updateMember(index: number, member: Member): Promise<boolean> {
-  const members = await getMembers();
-  if (index < 0 || index >= members.length) {
-    return false;
-  }
-  members[index] = member;
-  return saveMembers(members);
-}
-
-/**
- * メンバーを削除する
- */
-export async function deleteMember(index: number): Promise<boolean> {
-  const members = await getMembers();
-  if (index < 0 || index >= members.length) {
-    return false;
-  }
-  members.splice(index, 1);
-  return saveMembers(members);
-}

@@ -29,55 +29,6 @@ export async function createOptimalGroups(
   return createRandomGroups(members, groupCount, previousGroups);
 }
 
-/**
- * グループ分けの結果を検証する
- */
-function validateGroupAssignment(
-  groups: Group[],
-  originalMembers: Member[],
-  expectedGroupSizes: number[]
-): boolean {
-  // グループ数の確認
-  if (groups.length !== expectedGroupSizes.length) {
-    console.log(`Group count mismatch: expected ${expectedGroupSizes.length}, got ${groups.length}`);
-    return false;
-  }
-
-  // 各グループの人数確認
-  for (let i = 0; i < groups.length; i++) {
-    if (groups[i].members.length !== expectedGroupSizes[i]) {
-      console.log(`Group ${i + 1} size mismatch: expected ${expectedGroupSizes[i]}, got ${groups[i].members.length}`);
-      return false;
-    }
-  }
-
-  // 全メンバーが含まれているか確認
-  const assignedMemberNames = groups.flatMap(group => group.members.map(m => m.name));
-  const originalMemberNames = originalMembers.map(m => m.name);
-
-  // 重複チェック
-  const uniqueAssignedNames = new Set(assignedMemberNames);
-  if (uniqueAssignedNames.size !== assignedMemberNames.length) {
-    console.log('Duplicate members found in assignment');
-    return false;
-  }
-
-  // 全員が含まれているかチェック
-  if (assignedMemberNames.length !== originalMemberNames.length) {
-    console.log(`Member count mismatch: expected ${originalMemberNames.length}, got ${assignedMemberNames.length}`);
-    return false;
-  }
-
-  // 全員が正しく含まれているかチェック
-  for (const name of originalMemberNames) {
-    if (!assignedMemberNames.includes(name)) {
-      console.log(`Missing member: ${name}`);
-      return false;
-    }
-  }
-
-  return true;
-}
 
 /**
  * ランダムなグループ分けを行う（前回のグループ分けを考慮）

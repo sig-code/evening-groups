@@ -127,13 +127,6 @@ export async function deletePreset(id: string): Promise<boolean> {
   return savePresets(filteredPresets);
 }
 
-/**
- * プリセットをIDで取得する
- */
-export async function getPresetById(id: string): Promise<MemberPreset | null> {
-  const presets = await getPresets();
-  return presets.find(preset => preset.id === id) || null;
-}
 
 /**
  * ユニークなIDを生成する
