@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getGroupHistoryByDate, getLatestGroupHistory } from '@/lib/redis';
+import { getGroupHistoryByDate, getLatestGroupHistory } from '@/lib/vercel-kv';
 
 /**
  * グループ分け履歴を取得するAPI

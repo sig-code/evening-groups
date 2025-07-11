@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createOptimalGroups } from '@/lib/openai';
-import { saveGroupHistory, getLatestGroupHistory } from '@/lib/redis';
+import { saveGroupHistory, getLatestGroupHistory } from '@/lib/vercel-kv';
 import { Member } from '@/lib/types';
 
 /**

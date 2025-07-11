@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getMembers, saveMembers } from '@/lib/members';
+import { getMembers, saveMembers } from '@/lib/vercel-kv';
 import { Member } from '@/lib/types';
 
 /**
