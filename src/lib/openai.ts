@@ -25,11 +25,12 @@ export async function createOptimalGroups(
   groupCount: number,
   previousGroups?: Group[]
 ): Promise<Group[]> {
-  // 1グループの場合は全員を1つのグループにまとめる
+  // 1グループの場合は全員を1つのグループにまとめる（シャッフルあり）
   if (groupCount === 1) {
+    const shuffledMembers = [...members].sort(() => Math.random() - 0.5);
     return [{
       id: 1,
-      members: [...members]
+      members: shuffledMembers
     }];
   }
 
@@ -218,11 +219,12 @@ function validateGroupAssignment(
  * ランダムなグループ分けを行う（OpenAI APIが使用できない場合のフォールバック）
  */
 function createRandomGroups(members: Member[], groupCount: number): Group[] {
-  // 1グループの場合は全員を1つのグループにまとめる
+  // 1グループの場合は全員を1つのグループにまとめる（シャッフルあり）
   if (groupCount === 1) {
+    const shuffledMembers = [...members].sort(() => Math.random() - 0.5);
     return [{
       id: 1,
-      members: [...members]
+      members: shuffledMembers
     }];
   }
 

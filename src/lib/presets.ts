@@ -19,12 +19,16 @@ if (hasRedisCredentials) {
 // Redisのキー
 const PRESETS_KEY = 'evening-groups:presets';
 
+// メモリ内ストレージ（Redis が利用できない場合のフォールバック）
+let memoryPresets: MemberPreset[] = [];
+
 /**
  * プリセット一覧を取得する
  */
 export async function getPresets(): Promise<MemberPreset[]> {
   if (!hasRedisCredentials || !redis) {
-    return [];
+    console.log('Redis not available, using memory storage');
+    return [...memoryPresets]; // コピーを返す
   }
 
   try {
@@ -44,7 +48,9 @@ export async function getPresets(): Promise<MemberPreset[]> {
  */
 export async function savePresets(presets: MemberPreset[]): Promise<boolean> {
   if (!hasRedisCredentials || !redis) {
-    return false;
+    console.log('Redis not available, saving to memory storage');
+    memoryPresets = [...presets]; // コピーを保存
+    return true;
   }
 
   try {
