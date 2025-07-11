@@ -1,15 +1,22 @@
 'use client';
 
 import { Member } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface MemberListProps {
   members: Member[];
   onMembersChange?: (members: Member[]) => void;
+  onSave?: () => void;
 }
 
-export default function MemberList({ members, onMembersChange }: MemberListProps) {
+export default function MemberList({ members, onMembersChange, onSave }: MemberListProps) {
   const [editableMembers, setEditableMembers] = useState<Member[]>(members);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  // メンバーリストが変更されたら更新
+  useEffect(() => {
+    setEditableMembers(members);
+  }, [members]);
 
   // メンバーの削除
   const removeMember = (index: number) => {
@@ -34,9 +41,30 @@ export default function MemberList({ members, onMembersChange }: MemberListProps
     onMembersChange?.(newMembers);
   };
 
+  // メンバーリストを保存
+  const saveMembers = async () => {
+    if (onSave) {
+      setIsSaving(true);
+      await onSave();
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="my-6">
-      <h2 className="text-xl font-bold mb-4">参加者リスト</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">参加者リスト</h2>
+        <button
+          onClick={saveMembers}
+          disabled={isSaving}
+          className={`
+            px-4 py-2 rounded text-white
+            ${isSaving ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'}
+          `}
+        >
+          {isSaving ? '保存中...' : '参加者を保存'}
+        </button>
+      </div>
 
       {editableMembers.length === 0 ? (
         <p className="text-gray-500">参加者がいません</p>

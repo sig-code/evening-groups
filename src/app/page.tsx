@@ -13,23 +13,58 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // カレンダーから参加者を取得
-  const fetchMembers = async () => {
+  // 初期表示時にメンバーリストを取得
+  useEffect(() => {
+    loadMembers();
+  }, []);
+
+  // メンバーリストを取得
+  const loadMembers = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch('/api/calendar');
+      const response = await fetch('/api/members');
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'カレンダー情報の取得に失敗しました');
+        throw new Error(data.error || 'メンバー情報の取得に失敗しました');
       }
 
       setMembers(data.members);
     } catch (err) {
       setError(err instanceof Error ? err.message : '予期せぬエラーが発生しました');
-      console.error('Error fetching members:', err);
+      console.error('Error loading members:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // メンバーリストを保存
+  const saveMembers = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ members }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'メンバー情報の保存に失敗しました');
+      }
+
+      setError('メンバーリストを保存しました');
+      setTimeout(() => setError(null), 3000); // 3秒後にメッセージを消す
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '予期せぬエラーが発生しました');
+      console.error('Error saving members:', err);
     } finally {
       setIsLoading(false);
     }
@@ -75,25 +110,20 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-6">夕礼グループ分け</h1>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className={`border px-4 py-3 rounded mb-4 ${
+          error === 'メンバーリストを保存しました'
+            ? 'bg-green-100 border-green-400 text-green-700'
+            : 'bg-red-100 border-red-400 text-red-700'
+        }`}>
           {error}
         </div>
       )}
 
-      <div className="mb-6">
-        <button
-          onClick={fetchMembers}
-          disabled={isLoading}
-          className={`
-            px-4 py-2 rounded text-white
-            ${isLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}
-          `}
-        >
-          {isLoading ? '取得中...' : 'カレンダーから参加者取得'}
-        </button>
-      </div>
-
-      <MemberList members={members} onMembersChange={setMembers} />
+      <MemberList
+        members={members}
+        onMembersChange={setMembers}
+        onSave={saveMembers}
+      />
 
       <GroupForm onSubmit={createGroups} isLoading={isLoading} />
 
