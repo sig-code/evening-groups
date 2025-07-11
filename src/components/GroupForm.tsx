@@ -38,10 +38,10 @@ export default function GroupForm({ onSubmit, isLoading = false }: GroupFormProp
             <input
               id="groupCount"
               type="number"
-              min="2"
+              min="1"
               max="10"
               value={groupCount}
-              onChange={(e) => setGroupCount(parseInt(e.target.value) || 2)}
+              onChange={(e) => setGroupCount(parseInt(e.target.value) || 1)}
               className="input-material text-center text-lg font-semibold"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -49,13 +49,13 @@ export default function GroupForm({ onSubmit, isLoading = false }: GroupFormProp
             </div>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            2〜10グループまで設定可能です
+            1〜10グループまで設定可能です（1グループ = 全員一緒）
           </p>
         </div>
 
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-2">
-            {[2, 3, 4].map((count) => (
+            {[1, 2, 3].map((count) => (
               <button
                 key={count}
                 type="button"
@@ -73,7 +73,7 @@ export default function GroupForm({ onSubmit, isLoading = false }: GroupFormProp
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            {[5, 6, 7].map((count) => (
+            {[4, 5, 6].map((count) => (
               <button
                 key={count}
                 type="button"
@@ -88,6 +88,39 @@ export default function GroupForm({ onSubmit, isLoading = false }: GroupFormProp
                 <div className="text-xs">グループ</div>
               </button>
             ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {[7, 8, 9].map((count) => (
+              <button
+                key={count}
+                type="button"
+                onClick={() => setGroupCount(count)}
+                className={`p-3 rounded-lg border-2 transition-all duration-200 ${
+                  groupCount === count
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                }`}
+              >
+                <div className="text-lg font-bold">{count}</div>
+                <div className="text-xs">グループ</div>
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 max-w-[120px] mx-auto">
+            <button
+              type="button"
+              onClick={() => setGroupCount(10)}
+              className={`p-3 rounded-lg border-2 transition-all duration-200 ${
+                groupCount === 10
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+              }`}
+            >
+              <div className="text-lg font-bold">10</div>
+              <div className="text-xs">グループ</div>
+            </button>
           </div>
         </div>
 
