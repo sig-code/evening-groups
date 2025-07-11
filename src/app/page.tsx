@@ -133,11 +133,11 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6 max-w-6xl">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">夕</span>
+              <span className="text-white font-bold text-lg">G</span>
             </div>
-            夕礼グループ分け
+            Groups
           </h1>
-          <p className="text-gray-600 mt-2">効率的なグループ分けで、より良い夕礼を</p>
+          <p className="text-gray-600 mt-2">効率的なグループ分けアプリケーション</p>
         </div>
       </header>
 

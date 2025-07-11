@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "夕礼グループ分け",
-  description: "夕礼のためのグループ分けアプリ",
+  title: "Groups - グループ分けアプリ",
+  description: "効率的なグループ分けアプリケーション",
 };
 
 export default function RootLayout({
