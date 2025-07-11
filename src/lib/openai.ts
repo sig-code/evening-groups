@@ -18,151 +18,15 @@ interface GroupAssignmentResponse {
 }
 
 /**
- * OpenAI APIを使用して最適なグループ分けを行う
+ * ランダム関数を使用してグループ分けを行う
  */
 export async function createOptimalGroups(
   members: Member[],
   groupCount: number,
   previousGroups?: Group[]
 ): Promise<Group[]> {
-  // 1グループの場合は全員を1つのグループにまとめる（シャッフルあり）
-  if (groupCount === 1) {
-    const shuffledMembers = [...members].sort(() => Math.random() - 0.5);
-    return [{
-      id: 1,
-      members: shuffledMembers
-    }];
-  }
-
-  // 環境変数が設定されていない場合はランダムなグループ分けを行う
-  if (!hasOpenAICredentials || !openai) {
-    console.log('OpenAI API key not set. Using random group assignment.');
-    return createRandomGroups(members, groupCount);
-  }
-
-  try {
-    // 人数配分の計算
-    const totalMembers = members.length;
-    const baseSize = Math.floor(totalMembers / groupCount);
-    const remainder = totalMembers % groupCount;
-
-    // 各グループの理想的な人数を計算
-    const groupSizes = Array.from({ length: groupCount }, (_, i) =>
-      baseSize + (i < remainder ? 1 : 0)
-    );
-
-    const prompt = `
-以下の参加者を${groupCount}個のグループに分けてください。
-
-【参加者一覧】（合計${totalMembers}名）
-${members.map((m, i) => `${i + 1}. ${m.name}`).join('\n')}
-
-【前回のグループ分け】
-${previousGroups ?
-  previousGroups.map((group, i) =>
-    `グループ${group.id}: ${group.members.map(m => m.name).join(', ')}`
-  ).join('\n') :
-  'なし（初回）'
-}
-
-【必須制約】
-1. **人数の均等配分を最優先**
-   - 各グループの人数: ${groupSizes.map((size, i) => `グループ${i + 1}: ${size}名`).join(', ')}
-   - 人数差は最大1名まで
-   - 全員を必ず割り当てること
-
-2. **前回との重複最小化**
-   - 前回と同じグループになるメンバーペアを可能な限り避ける
-   - ただし人数均等を優先し、均等配分を崩してまで重複を避けない
-
-【出力形式】
-- 必ず${groupCount}個のグループを作成
-- 各グループのメンバー数は指定された人数と完全に一致させる
-- グループIDは1から${groupCount}まで連番で設定
-`;
-
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `あなたはグループ分けを最適化するAIアシスタントです。
-
-【最重要原則】
-1. 人数の均等配分を絶対に守る - これが最優先事項です
-2. 指定された各グループの人数と完全に一致させる
-3. 全参加者を漏れなく配置する
-4. その上で可能な限り前回との重複を避ける
-
-【処理手順】
-1. まず参加者総数とグループ数から各グループの正確な人数を計算
-2. 人数配分を厳密に守りながらメンバーを配置
-3. 前回の組み合わせを参考に重複を最小化（ただし人数配分は崩さない）
-4. 最終確認で各グループの人数が指定通りか検証
-
-必ずJSON形式で正確に出力してください。`
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'group_assignment',
-          schema: {
-            type: 'object',
-            properties: {
-              groups: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    members: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          name: { type: 'string' }
-                        },
-                        required: ['name'],
-                        additionalProperties: false
-                      }
-                    }
-                  },
-                  required: ['id', 'members'],
-                  additionalProperties: false
-                }
-              }
-            },
-            required: ['groups'],
-            additionalProperties: false
-          },
-          strict: true
-        }
-      }
-    });
-
-    if (response.choices[0].message.content) {
-      // TypeScriptの型定義上、contentは文字列型なのでJSON.parseが必要
-      const result = JSON.parse(response.choices[0].message.content) as GroupAssignmentResponse;
-
-      // 結果の検証
-      if (validateGroupAssignment(result.groups, members, groupSizes)) {
-        return result.groups;
-      } else {
-        console.log('OpenAI result validation failed. Using fallback random assignment.');
-        return createRandomGroups(members, groupCount);
-      }
-    }
-
-    return createRandomGroups(members, groupCount);
-  } catch (error) {
-    console.error('Error using OpenAI API:', error);
-    return createRandomGroups(members, groupCount);
-  }
+  console.log('Using random group assignment (GPT disabled).');
+  return createRandomGroups(members, groupCount);
 }
 
 /**
