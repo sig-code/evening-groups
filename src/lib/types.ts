@@ -25,3 +25,11 @@ export interface CalendarEvent {
     date?: string;
   };
 }
+
+export interface MemberPreset {
+  id: string;
+  name: string;
+  members: Member[];
+  createdAt: string;
+  updatedAt: string;
+}

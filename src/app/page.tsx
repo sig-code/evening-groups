@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import MemberList from '@/components/MemberList';
 import GroupForm from '@/components/GroupForm';
 import GroupDisplay from '@/components/GroupDisplay';
+import PresetManager from '@/components/PresetManager';
 import { Member, Group } from '@/lib/types';
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
   const [previousGroups, setPreviousGroups] = useState<Group[] | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // 初期表示時にメンバーリストを取得
   useEffect(() => {
@@ -105,6 +107,25 @@ export default function Home() {
     }
   };
 
+  // プリセットからメンバーを読み込み
+  const handleLoadPreset = (presetMembers: Member[]) => {
+    setMembers(presetMembers);
+  };
+
+  // エラーメッセージを設定
+  const handleError = (message: string) => {
+    setError(message);
+    setSuccessMessage(null);
+    setTimeout(() => setError(null), 5000);
+  };
+
+  // 成功メッセージを設定
+  const handleSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setError(null);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -122,27 +143,37 @@ export default function Home() {
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Alert Messages */}
-        {error && (
+        {(error || successMessage) && (
           <div className={`mb-6 p-4 rounded-lg shadow-md ${
-            error === 'メンバーリストを保存しました'
+            successMessage || error === 'メンバーリストを保存しました'
               ? 'bg-green-50 border-l-4 border-green-400 text-green-800'
               : 'bg-red-50 border-l-4 border-red-400 text-red-800'
           }`}>
             <div className="flex items-center">
               <div className={`w-5 h-5 rounded-full mr-3 ${
-                error === 'メンバーリストを保存しました'
+                successMessage || error === 'メンバーリストを保存しました'
                   ? 'bg-green-400'
                   : 'bg-red-400'
               }`}>
                 <span className="text-white text-xs flex items-center justify-center h-full">
-                  {error === 'メンバーリストを保存しました' ? '✓' : '!'}
+                  {successMessage || error === 'メンバーリストを保存しました' ? '✓' : '!'}
                 </span>
               </div>
-              {error}
+              {successMessage || error}
             </div>
           </div>
         )}
 
+
+        {/* Preset Manager */}
+        <div className="mb-8">
+          <PresetManager
+            currentMembers={members}
+            onLoadPreset={handleLoadPreset}
+            onError={handleError}
+            onSuccess={handleSuccess}
+          />
+        </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
