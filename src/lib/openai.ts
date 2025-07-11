@@ -75,10 +75,9 @@ ${previousGroups ? JSON.stringify(previousGroups) : 'なし'}
                       items: {
                         type: 'object',
                         properties: {
-                          name: { type: 'string' },
-                          email: { type: 'string' }
+                          name: { type: 'string' }
                         },
-                        required: ['name', 'email'],
+                        required: ['name'],
                         additionalProperties: false
                       }
                     }

@@ -106,28 +106,75 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">夕礼グループ分け</h1>
-
-      {error && (
-        <div className={`border px-4 py-3 rounded mb-4 ${
-          error === 'メンバーリストを保存しました'
-            ? 'bg-green-100 border-green-400 text-green-700'
-            : 'bg-red-100 border-red-400 text-red-700'
-        }`}>
-          {error}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-md sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-6 max-w-6xl">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-lg">夕</span>
+            </div>
+            夕礼グループ分け
+          </h1>
+          <p className="text-gray-600 mt-2">効率的なグループ分けで、より良い夕礼を</p>
         </div>
-      )}
+      </header>
 
-      <MemberList
-        members={members}
-        onMembersChange={setMembers}
-        onSave={saveMembers}
-      />
+      <main className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Alert Messages */}
+        {error && (
+          <div className={`mb-6 p-4 rounded-lg shadow-md ${
+            error === 'メンバーリストを保存しました'
+              ? 'bg-green-50 border-l-4 border-green-400 text-green-800'
+              : 'bg-red-50 border-l-4 border-red-400 text-red-800'
+          }`}>
+            <div className="flex items-center">
+              <div className={`w-5 h-5 rounded-full mr-3 ${
+                error === 'メンバーリストを保存しました'
+                  ? 'bg-green-400'
+                  : 'bg-red-400'
+              }`}>
+                <span className="text-white text-xs flex items-center justify-center h-full">
+                  {error === 'メンバーリストを保存しました' ? '✓' : '!'}
+                </span>
+              </div>
+              {error}
+            </div>
+          </div>
+        )}
 
-      <GroupForm onSubmit={createGroups} isLoading={isLoading} />
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 shadow-xl flex items-center gap-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="text-gray-700 font-medium">処理中...</span>
+            </div>
+          </div>
+        )}
 
-      <GroupDisplay groups={groups} previousGroups={previousGroups} />
-    </main>
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Member Management */}
+          <div className="lg:col-span-2">
+            <MemberList
+              members={members}
+              onMembersChange={setMembers}
+              onSave={saveMembers}
+            />
+          </div>
+
+          {/* Right Column - Group Settings */}
+          <div className="lg:col-span-1">
+            <GroupForm onSubmit={createGroups} isLoading={isLoading} />
+          </div>
+        </div>
+
+        {/* Group Results */}
+        <div className="mt-8">
+          <GroupDisplay groups={groups} previousGroups={previousGroups} />
+        </div>
+      </main>
+    </div>
   );
 }

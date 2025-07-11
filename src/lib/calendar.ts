@@ -72,7 +72,6 @@ export function getAttendees(event: CalendarEvent): Member[] {
     .filter(attendee => attendee.responseStatus === 'accepted')
     .map(attendee => ({
       name: attendee.displayName || attendee.email.split('@')[0],
-      email: attendee.email,
     }));
 }
 
@@ -84,12 +83,12 @@ export async function getEveningMeetingMembers(): Promise<Member[]> {
   if (!hasCalendarCredentials) {
     console.log('Google Calendar credentials not set. Using dummy data.');
     return [
-      { name: 'テスト太郎', email: 'test1@example.com' },
-      { name: '開発次郎', email: 'test2@example.com' },
-      { name: 'デモ花子', email: 'test3@example.com' },
-      { name: 'サンプル四郎', email: 'test4@example.com' },
-      { name: 'テスト五郎', email: 'test5@example.com' },
-      { name: 'デモ六郎', email: 'test6@example.com' },
+      { name: 'テスト太郎' },
+      { name: '開発次郎' },
+      { name: 'デモ花子' },
+      { name: 'サンプル四郎' },
+      { name: 'テスト五郎' },
+      { name: 'デモ六郎' },
     ];
   }
 

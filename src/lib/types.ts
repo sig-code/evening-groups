@@ -1,6 +1,5 @@
 export interface Member {
   name: string;
-  email: string;
 }
 
 export interface Group {

@@ -24,11 +24,14 @@ export async function getMembers(): Promise<Member[]> {
 
 /**
  * メンバーリストを保存する
+ * 注意: Edge Configは読み取り専用のため、この関数は実際には動作しません
+ * 代わりにvercel-kv.tsのsaveMembersを使用してください
  */
 export async function saveMembers(members: Member[]): Promise<boolean> {
   try {
-    await edgeConfig.set(MEMBERS_KEY, members);
-    return true;
+    // Edge Configはsetメソッドを持たないため、この関数は実際には動作しません
+    console.warn('Edge Config does not support set operations in production');
+    return false;
   } catch (error) {
     console.error('Error saving members to Edge Config:', error);
     return false;
@@ -37,6 +40,8 @@ export async function saveMembers(members: Member[]): Promise<boolean> {
 
 /**
  * グループ分け履歴を保存する
+ * 注意: Edge Configは読み取り専用のため、この関数は実際には動作しません
+ * 代わりにvercel-kv.tsのsaveGroupHistoryを使用してください
  */
 export async function saveGroupHistory(groups: Group[]): Promise<void> {
   try {
@@ -46,10 +51,8 @@ export async function saveGroupHistory(groups: Group[]): Promise<void> {
       groups,
     };
 
-    // グループ履歴を保存
-    await edgeConfig.set(`${GROUP_HISTORY_PREFIX}${date}`, history);
-    // 最新の実行日を更新
-    await edgeConfig.set(LAST_DATE_KEY, date);
+    // Edge Configはsetメソッドを持たないため、この関数は実際には動作しません
+    console.warn('Edge Config does not support set operations in production');
   } catch (error) {
     console.error('Error saving group history to Edge Config:', error);
   }
