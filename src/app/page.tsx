@@ -14,11 +14,20 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState<boolean>(false);
 
-  // 初期表示時にメンバーリストを取得
+  // クライアントサイドでのみ実行
   useEffect(() => {
-    loadMembers();
+    setIsClient(true);
   }, []);
+
+  // 初期表示時にメンバーリストとグループ結果を取得
+  useEffect(() => {
+    if (isClient) {
+      loadMembers();
+      loadLatestGroups();
+    }
+  }, [isClient]);
 
   // メンバーリストを取得
   const loadMembers = async () => {
@@ -39,6 +48,22 @@ export default function Home() {
       console.error('Error loading members:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // 最新のグループ分け結果を取得
+  const loadLatestGroups = async () => {
+    try {
+      const response = await fetch('/api/groups/latest');
+      const data = await response.json();
+
+      if (response.ok && data.groups && data.groups.length > 0) {
+        setGroups(data.groups);
+        setPreviousGroups(data.previousGroups);
+      }
+    } catch (err) {
+      console.error('Error loading latest groups:', err);
+      // エラーは表示せず、単にグループ結果がない状態にする
     }
   };
 

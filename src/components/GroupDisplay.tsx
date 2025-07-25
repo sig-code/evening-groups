@@ -1,7 +1,7 @@
 'use client';
 
 import { Group } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface GroupDisplayProps {
   groups: Group[];
@@ -10,6 +10,75 @@ interface GroupDisplayProps {
 
 export default function GroupDisplay({ groups }: GroupDisplayProps) {
   const [checkedMembers, setCheckedMembers] = useState<Set<string>>(new Set());
+  const [isClient, setIsClient] = useState<boolean>(false);
+
+  // クライアントサイドでのみ実行
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // チェック状態を読み込み
+  useEffect(() => {
+    if (isClient && groups.length > 0) {
+      loadCheckStatus();
+    }
+  }, [isClient, groups]);
+
+  // 新しいグループ分けが実行された際のチェック状態のリセット機能を追加
+  const clearCheckStatus = async () => {
+    try {
+      await fetch('/api/check-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ checkStatus: {} }),
+      });
+      setCheckedMembers(new Set());
+    } catch (error) {
+      console.error('Error clearing check status:', error);
+    }
+  };
+
+  // チェック状態を読み込み
+  const loadCheckStatus = async () => {
+    try {
+      const response = await fetch('/api/check-status');
+      const data = await response.json();
+      
+      if (response.ok && data.checkStatus) {
+        const checkedSet = new Set<string>();
+        Object.entries(data.checkStatus).forEach(([name, isChecked]) => {
+          if (isChecked) {
+            checkedSet.add(name);
+          }
+        });
+        setCheckedMembers(checkedSet);
+      }
+    } catch (error) {
+      console.error('Error loading check status:', error);
+    }
+  };
+
+  // チェック状態を保存
+  const saveCheckStatus = async (newChecked: Set<string>) => {
+    try {
+      const checkStatus: Record<string, boolean> = {};
+      newChecked.forEach(name => {
+        checkStatus[name] = true;
+      });
+
+      await fetch('/api/check-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ checkStatus }),
+      });
+    } catch (error) {
+      console.error('Error saving check status:', error);
+    }
+  };
 
   // メンバーのチェック状態を切り替え
   const toggleMemberCheck = (memberName: string) => {
@@ -20,6 +89,7 @@ export default function GroupDisplay({ groups }: GroupDisplayProps) {
       newChecked.add(memberName);
     }
     setCheckedMembers(newChecked);
+    saveCheckStatus(newChecked);
   };
 
   if (!groups || groups.length === 0) {
@@ -37,15 +107,27 @@ export default function GroupDisplay({ groups }: GroupDisplayProps) {
   return (
     <div className="card-material">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-            <span className="text-purple-600 text-sm">🎯</span>
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 text-sm">🎯</span>
+              </div>
+              グループ分け結果
+            </h2>
+            <p className="text-gray-600 text-sm mt-1">
+              {groups.length}つのグループに分けました・チェックで前回話した人をマーク
+            </p>
           </div>
-          グループ分け結果
-        </h2>
-        <p className="text-gray-600 text-sm mt-1">
-          {groups.length}つのグループに分けました・チェックで前回話した人をマーク
-        </p>
+          {checkedMembers.size > 0 && (
+            <button
+              onClick={clearCheckStatus}
+              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+            >
+              チェックをクリア
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
