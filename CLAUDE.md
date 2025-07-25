@@ -76,7 +76,6 @@ KV_REST_API_READ_ONLY_TOKEN=your_kv_rest_api_read_only_token
 - `GET/POST /api/members` - Member CRUD operations
 - `GET /api/history` - Retrieve group history
 - `GET/POST/DELETE /api/presets` - Member preset management
-- `POST /api/calendar` - Google Calendar integration (if configured)
 
 ### Development Notes
 

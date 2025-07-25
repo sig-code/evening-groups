@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createOptimalGroups } from '@/lib/openai';
+import { createOptimalGroups } from '@/lib/groups';
 import { saveGroupHistory, getLatestGroupHistory } from '@/lib/vercel-kv';
 import { Member } from '@/lib/types';
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const previousHistory = await getLatestGroupHistory();
     const previousGroups = previousHistory?.groups;
 
-    // OpenAI APIを使用して最適なグループ分けを行う
+    // ランダム関数を使用して最適なグループ分けを行う
     const groups = await createOptimalGroups(members, groupCount, previousGroups);
 
     // 履歴を保存

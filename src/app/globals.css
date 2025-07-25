@@ -25,19 +25,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212;
-    --foreground: #ffffff;
-    --primary: #90caf9;
-    --primary-dark: #64b5f6;
-    --secondary: #f48fb1;
-    --surface: #1e1e1e;
-    --surface-variant: #2c2c2c;
-    --outline: #424242;
-    --shadow: rgba(0, 0, 0, 0.24);
-  }
-}
 
 body {
   background: var(--background);
@@ -74,7 +61,7 @@ body {
 
 /* Material Design input styles */
 .input-material {
-  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white;
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900;
 }
 
 /* Material Design chip styles */
